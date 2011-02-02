@@ -401,7 +401,6 @@ static VALUE zk_state(VALUE self) {
   return st;
 }
 
-/* XXX: for some reason, this makes the zkc code unstable */
 static VALUE zk_cls_set_log_stream(VALUE self, VALUE io) {
   rb_io_t *fptr;
   FILE *zk_log_stream;
@@ -443,7 +442,7 @@ void Init_zookeeper_c() {
   mZookeeperExceptions = rb_define_module_under(mZookeeper, "Exceptions");
 
   rb_define_singleton_method(cZookeeper, "set_debug_level", zk_cls_set_debug_level, 1);
-/*  rb_define_singleton_method(cZookeeper, "set_log_stream", zk_cls_set_log_stream, 1);*/
+  rb_define_singleton_method(cZookeeper, "set_log_stream", zk_cls_set_log_stream, 1);
 
 
 #define DEFINE_METHOD(method, args) { \

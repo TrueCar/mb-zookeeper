@@ -52,4 +52,6 @@ namespace :ext do
       sh "make"
     end
   end
+
+  task :rebuild => [:clean, :build]
 end

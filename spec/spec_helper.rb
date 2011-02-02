@@ -7,12 +7,12 @@ ZK_TEST_PORT = 21810
 
 require 'spec/zookeeper_test_server'
 
-# unless defined?(::JRUBY_VERSION)
-#   $stderr.puts "Setting log stream to /tmp/zkclient.log"
-#   File.open('/tmp/zkclient.log', 'w') do |fp|
-#     ZooKeeper::CZookeeper.set_log_stream(fp)
-#   end
-# end
+unless defined?(::JRUBY_VERSION)
+  $stderr.puts "Setting log stream to /tmp/zkclient.log"
+  File.open('/tmp/zkclient.log', 'w') do |fp|
+    ZooKeeper::CZookeeper.set_log_stream(fp)
+  end
+end
 
 RSpec.configure do |config|
   
