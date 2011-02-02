@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # this isn't really used in this gem
   # @private
   # :nodoc:

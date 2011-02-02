@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
 
   # a stat object returned by get and children calls
   # useful for optimistic locking of zookeeper nodes

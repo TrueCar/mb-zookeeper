@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # useful class for locking.
   # implements a locking algorithm talked about by Zookeeper documentation
   # @see http://hadoop.apache.org/zookeeper/docs/r3.0.0/recipes.html#sc_recipes_Locks Zookeeper docs

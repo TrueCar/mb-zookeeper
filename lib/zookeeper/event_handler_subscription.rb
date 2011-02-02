@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # the subscription object that is passed back from subscribing
   # to events.
   # @see ZooKeeperEventHandler#subscribe

@@ -2,6 +2,6 @@ require 'logger'
 
 # @private
 # :nodoc:
-class ZooKeeper
+module ZooKeeper
   $LOG = Logger.new($stderr)  
 end

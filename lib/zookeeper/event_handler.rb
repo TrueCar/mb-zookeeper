@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # this is the default watcher provided by the zookeeper connection
   # and is used to monitor all watch events on any paths
   # watchers are implemented by adding the :watch => true flag to

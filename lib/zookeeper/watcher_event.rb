@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # event object returned to your subscription blocks
   # @see ZooKeeper::EventHandler#subscribe
   class WatcherEvent

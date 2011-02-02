@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # implements a simple message queue based on Zookeeper recipes
   # @see http://hadoop.apache.org/zookeeper/docs/r3.0.0/recipes.html#sc_recipes_Queues
   # these are good for low-volume queues only

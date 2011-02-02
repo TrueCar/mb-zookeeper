@@ -1,4 +1,4 @@
-class ZooKeeper
+module ZooKeeper
   # create a connection pool useful for multithreaded applications
   # @example
   #   pool = ZooKeeper::ConnectionPool.new("localhost:2181", 10)
