@@ -23,8 +23,6 @@ describe ZooKeeper, "with no paths" do
     end
   end
 
-
-
   it "should not exist" do
     @zk.exists?("/test").should be_nil
   end

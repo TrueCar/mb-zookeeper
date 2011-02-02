@@ -24,6 +24,42 @@ module ZooKeeper
     def queue(name)
       MessageQueue.new(self, name)
     end
+
+    # convenience method for acquiring a lock then executing a code block
+    def with_lock(path, &b)
+      locker(path).with_lock(&b)
+    end
+
+    # creates all parent paths and 'path' in zookeeper as nodes with zero data
+    # opts should be valid options to ZooKeeper#create
+    #---
+    # TODO: write a non-recursive version of this. ruby doesn't have TCO, so
+    # this could get expensive w/ psychotically long paths
+    #
+    def mkdir_p(path)
+      create(path, '', :mode => :persistent)
+    rescue Exceptions::NodeExists
+      return
+    rescue Exceptions::NoNode
+      if File.dirname(path) == '/'
+        # ok, we're screwed, blow up
+        raise ZooStoreException, "could not create '/', something is wrong", caller
+      end
+
+      mkdir_p(File.dirname(path))
+      retry
+    end
+
+    # recursively remove all children of path then remove path itself
+    def rm_rf(path)
+      children(path).each do |child|
+        rm_rf(File.join(path, child))
+      end
+
+      delete(path)
+      nil
+    rescue Exceptions::NoNode
+    end
   end
 end
 
