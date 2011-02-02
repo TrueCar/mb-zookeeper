@@ -11,11 +11,13 @@
 #include <errno.h>
 #include <stdio.h>
 
-static VALUE mZookeeper = Qnil;
-static VALUE cZookeeper = Qnil;
-static VALUE eNoNode = Qnil;
-static VALUE eBadVersion = Qnil;
-static VALUE eNodeExists = Qnil;
+static VALUE mZookeeper           = Qnil;
+static VALUE cZookeeper           = Qnil;
+static VALUE eNoNode              = Qnil;
+static VALUE eBadVersion          = Qnil;
+static VALUE eNodeExists          = Qnil;
+static VALUE mZookeeperExceptions = Qnil;
+static VALUE eKeeperException     = Qnil;
 
 struct zk_rb_data {
   zhandle_t *zh;
@@ -380,8 +382,8 @@ static VALUE method_recv_timeout(VALUE self) {
 }
 
 #warning [emaland] make this a class method or global
-static VALUE method_set_debug_level(VALUE self, VALUE level) {
-  FETCH_DATA_PTR(self, zk);
+static VALUE zk_cls_method_set_debug_level(VALUE cls, VALUE level) {
+/*  rb_raise(rb_eRuntimeError, "level was %d", level);*/
   Check_Type(level, T_FIXNUM);
   zoo_set_debug_level(FIX2INT(level));
   return Qnil;
@@ -415,8 +417,18 @@ static VALUE method_set_log_stream(VALUE self, VALUE stream) {
 //}
 
 void Init_zookeeper_c() {
+  FILE *log_stream;
+
+  // HACK! silence logging (ffs) in quite possibly a terrible way
+  log_stream = fopen("/dev/null", "w");
+  zoo_set_log_stream(log_stream);
+
   mZookeeper = rb_define_module("ZooKeeper");
   cZookeeper = rb_define_class_under(mZookeeper, "CZookeeper", rb_cObject);
+  mZookeeperExceptions = rb_define_module_under(mZookeeper, "Exceptions");
+
+  rb_define_singleton_method(cZookeeper, "set_debug_level", zk_cls_method_set_debug_level, 1);
+
 
 #define DEFINE_METHOD(method, args) { \
     rb_define_method(cZookeeper, #method, method_ ## method, args); }
@@ -440,15 +452,16 @@ void Init_zookeeper_c() {
   DEFINE_METHOD(is_unrecoverable, 0);
   DEFINE_METHOD(recv_timeout, 1);
   DEFINE_METHOD(set2, -1);
-  DEFINE_METHOD(set_debug_level, 1);
+/*  DEFINE_METHOD(set_debug_level, 1);*/
   DEFINE_METHOD(set_log_stream, 1);
 //  DEFINE_METHOD(set_watcher, 2);
   DEFINE_METHOD(state, 0);
   DEFINE_METHOD(zerror, 1);
 
-  eNoNode = rb_define_class_under(cZookeeper, "NoNodeError", rb_eRuntimeError);
-  eBadVersion = rb_define_class_under(cZookeeper, "BadVersionError", rb_eRuntimeError);
-  eNodeExists = rb_define_class_under(cZookeeper, "NodeExistsError", rb_eRuntimeError);
+  eKeeperException  = rb_define_class_under(mZookeeperExceptions, "KeeperException", rb_eStandardError);
+  eNoNode           = rb_define_class_under(mZookeeperExceptions, "NoNode",          eKeeperException);
+  eBadVersion       = rb_define_class_under(mZookeeperExceptions, "BadVersion",      eKeeperException);
+  eNodeExists       = rb_define_class_under(mZookeeperExceptions, "NodeExists",      eKeeperException);
 
 #define EXPORT_CONST(x) { rb_define_const(cZookeeper, #x, INT2FIX(x)); }
 

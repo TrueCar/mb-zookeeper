@@ -1,7 +1,8 @@
-require 'zookeeper_c'
+require File.expand_path('zookeeper_c', File.dirname(__FILE__))
 
 module ZooKeeper
   class Connection < CZookeeper
+    include Exceptions
 
     attr_accessor :watcher
 
@@ -38,15 +39,13 @@ module ZooKeeper
     def create(path, data = "", args = {})
       mode = args[:mode] || :ephemeral
       super(path, data, flags_from_mode(mode))
-    rescue NodeExistsError
-      raise ZooKeeper::KeeperException::NodeExists.new
     end
 
     def exists?(path, args = {})
       watch = args[:watch] || false
       Stat.new(exists(path, watch))
-    rescue NoNodeError
-      return nil
+#     rescue ZooKeeper::Exceptions::NoNode
+#       return nil
     end
     
     def get(path, args = {})
@@ -55,8 +54,8 @@ module ZooKeeper
 
       value, stat = super(path, watch)
       [value, Stat.new(stat)]
-    rescue NoNodeError
-      raise KeeperException::NoNode
+#     rescue NoNodeError
+#       raise ZooKeeper::Exceptions::NoNode
     end
     
     def set(path, data, args = {})
@@ -73,8 +72,8 @@ module ZooKeeper
       context  = args[:context]
       
       super(path, version)
-    rescue NoNodeError
-      raise KeeperException::NoNode
+#     rescue NoNodeError
+#       raise KeeperException::NoNode
     end
 
     def children(path, args = {})
@@ -83,8 +82,8 @@ module ZooKeeper
       #context  = args[:context]
 
       get_children(path, watch)
-    rescue NoNodeError
-      raise KeeperException::NoNode
+#     rescue NoNodeError
+#       raise KeeperException::NoNode
     end
 
   private
