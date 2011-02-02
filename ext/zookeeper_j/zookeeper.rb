@@ -1,7 +1,7 @@
 include Java
 
-require 'zookeeper_j/zookeeper-3.3.1.jar'
-require 'zookeeper_j/log4j-1.2.15.jar'
+require 'zookeeper_jar'
+require 'log4j'
 require 'zookeeper_j/extensions'
 
 JZooKeeper = org.apache.zookeeper.ZooKeeper

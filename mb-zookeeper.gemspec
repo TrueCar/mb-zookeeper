@@ -19,9 +19,10 @@ Gem::Specification.new do |s|
     
   case RUBY_PLATFORM
   when /java/
-     s.files += ["ext/zookeeper_j/log4j-1.2.15.jar", "ext/zookeeper_j/zookeeper-3.3.1.jar",
-                 "ext/zookeeper_j/extensions.rb", "ext/zookeeper_j/zookeeper.rb"]
+     s.files += ["ext/zookeeper_j/extensions.rb", "ext/zookeeper_j/zookeeper.rb"]
      s.platform = 'java'
+     s.add_runtime_dependency('slyphon-log4j',         '= 1.2.15')
+     s.add_runtime_dependency('slyphon-zookeeper_jar', '= 3.3.1')
   else
      s.files += ["ext/zookeeper_c/zookeeper_ruby.c", "ext/zookeeper_c/zookeeper.rb", "ext/zookeeper_c/zkc-3.3.1.tar.gz"]
      s.extensions = ["ext/zookeeper_c/extconf.rb"]
