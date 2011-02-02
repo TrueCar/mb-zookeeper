@@ -12,7 +12,7 @@ module ZooKeeper
       @zk = zookeeper_client
       @root_lock_node = root_lock_node
       @path = name
-      @zk.create(root_lock_node, "", :mode => :persistent) rescue KeeperException::NodeExists
+      @zk.create(root_lock_node, "", :mode => :persistent) rescue Exceptions::NodeExists
     end
 
     # a blocking lock that waits until the lock is available for continuing
@@ -82,7 +82,7 @@ private
 
     def cleanup_lock_file!
       @zk.delete(@lock_file)
-      @zk.delete(root_lock_path) rescue KeeperException::NotEmpty
+      @zk.delete(root_lock_path) rescue Exceptions::NotEmpty
     end
 
     def have_first_lock?(watch = true)
@@ -92,9 +92,9 @@ private
     end
 
     def create_lock_file!
-      @zk.create(root_lock_path, "", :mode => :persistent) rescue KeeperException::NodeExists
+      @zk.create(root_lock_path, "", :mode => :persistent) rescue Exceptions::NodeExists
       @lock_file = @zk.create("#{root_lock_path}/lock", "", :mode => :ephemeral_sequential)
-    rescue KeeperException::NoNode
+    rescue Exceptions::NoNode
       retry
     end
 

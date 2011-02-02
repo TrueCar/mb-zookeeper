@@ -44,8 +44,8 @@ module ZooKeeper
     def exists?(path, args = {})
       watch = args[:watch] || false
       Stat.new(exists(path, watch))
-#     rescue ZooKeeper::Exceptions::NoNode
-#       return nil
+    rescue ZooKeeper::Exceptions::NoNode
+      return nil
     end
     
     def get(path, args = {})

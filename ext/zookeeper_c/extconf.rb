@@ -50,7 +50,7 @@ end
 $LIBS << " -lzookeeper_mt_gem"
 
 if ENV['DEBUG']
-  $CFLAGS = " -g gdb3"
+  $CFLAGS = " -ggdb3 -O0"
 end
 
 #if have_library("zookeeper_mt") then

@@ -14,15 +14,15 @@ class ZooKeeperTestServer
     FileUtils.mkdir_p("/tmp/zookeeper/server1/data")
     if background
       thread = Thread.new do
-        `#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start`
+        system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start")
       end
     else
-      `#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start`
+      system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start")
     end
   end
 
   def self.stop
-    `#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh stop`
+    system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh stop")
     FileUtils.remove_dir("/tmp/zookeeper", true)
   end
   
@@ -37,5 +37,31 @@ class ZooKeeperTestServer
     end
      @@log_level_set = true
   end
-  
+
+
+#   ZOOMAIN = 'org.apache.zookeeper.server.quorum.QuorumPeerMain'
+
+#   ZK_DIST_PATH = File.expand_path('zookeeper-3.3.1', File.dirname(__FILE__))
+
+#   ZOO_CFG_PATH = File.join(ZK_DIST_PATH, 'conf/zoo.cfg')
+
+#   def initialize
+#     pid = nil
+#   end
+
+#   def zk_classpath
+#     Dir["#{ZK_DIST_PATH}/zookeeper-3.*.jar", "#{ZK_DIST_PATH}/lib/*.jar"].join(':')
+#   end
+
+#   # this is the MRI verison
+#   def start_server_mri
+#     raise "server already running! pid: #{pid}" if pid
+
+#     pid = fork do
+#       ENV['CLASSPATH'] = zk_classpath
+
+#       exec("java -Dzookeeper.log.dir=/tmp -Dzookeeper.root.logger=INFO,CONSOLE #{ZOOMAIN} #{ZOO_CFG_PATH}")
+#     end
+#   end
+#   
 end

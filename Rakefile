@@ -33,3 +33,23 @@ task :stress_watch do
     puts `spec spec/watch_spec.rb`
   end
 end
+
+ZKC_EXT_DIR = 'ext/zookeeper_c'
+
+namespace :ext do
+  task :clean do
+    rm_rf FileList["#{ZKC_EXT_DIR}/{Makefile,c,include,lib,bin}", "#{ZKC_EXT_DIR}/*.{o,bundle,so}"].to_a
+  end
+
+  desc 'just run make in the ext dir'
+  task :make do
+  end
+
+  desc 'build zkc again'
+  task :build do
+    cd ZKC_EXT_DIR do
+      ruby 'extconf.rb'
+      sh "make"
+    end
+  end
+end

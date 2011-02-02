@@ -41,6 +41,8 @@ end
 # silent watcher for testing
 class SilentWatcher; def process(event); end; end
 
+ZOOKEEPER_TEST_PORT = 21810
+
 class EventWatcher
   
   attr_reader :events, :received_disconnected

@@ -40,7 +40,7 @@ describe ZooKeeper, "with no paths" do
   end
 
   it "should raise an exception for a non existent path" do
-    lambda { @zk.get("/non_existent_path") }.should raise_error(KeeperException::NoNode)
+    lambda { @zk.get("/non_existent_path") }.should raise_error(ZooKeeper::Exceptions::NoNode)
   end
 
   it "should create a path with sequence set" do
