@@ -1,8 +1,11 @@
 $LOAD_PATH << "#{File.dirname(__FILE__)}/../ext" << "#{File.dirname(__FILE__)}/../lib"
 require 'zookeeper'
 require 'spec/mock_callbacks'
-require 'spec/zookeeper_test_server'
 require 'fileutils'
+
+ZK_TEST_PORT = 21810
+
+require 'spec/zookeeper_test_server'
 
 # unless defined?(::JRUBY_VERSION)
 #   $stderr.puts "Setting log stream to /tmp/zkclient.log"
@@ -18,7 +21,7 @@ RSpec.configure do |config|
   config.before(:all) do
     ZooKeeperTestServer.start
     wait_until { ZooKeeperTestServer.running? }
-    @test_connection = ZooKeeper.new("localhost:2181", :watcher => :default)
+    @test_connection = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
     wait_until{ @test_connection.connected? }
     @test_connection.close!
   end
@@ -40,8 +43,6 @@ end
 
 # silent watcher for testing
 class SilentWatcher; def process(event); end; end
-
-ZOOKEEPER_TEST_PORT = 21810
 
 class EventWatcher
   

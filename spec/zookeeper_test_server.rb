@@ -5,6 +5,8 @@ class ZooKeeperTestServer
   @@log_level_set = false
   
   def self.running?
+    # XXX: uhh, what if you have zookeeper running on your system already?
+    
     `ps | grep zookeeper`.include?("zookeeper-3.3.1")
   end
 
@@ -14,15 +16,15 @@ class ZooKeeperTestServer
     FileUtils.mkdir_p("/tmp/zookeeper/server1/data")
     if background
       thread = Thread.new do
-        system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start")
+        system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start &>/dev/null")
       end
     else
-      system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start")
+      system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh start &>/dev/null")
     end
   end
 
   def self.stop
-    system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh stop")
+    system("#{SPEC_LOCATION}/zookeeper-3.3.1/bin/zkServer.sh stop &>/dev/null")
     FileUtils.remove_dir("/tmp/zookeeper", true)
   end
   

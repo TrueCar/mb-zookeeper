@@ -3,8 +3,8 @@ require File.join(File.dirname(__FILE__), %w[spec_helper])
 describe ZooKeeper::Locker do
 
   before(:each) do
-    @zk = ZooKeeper.new("localhost:2181", :watcher => :default)
-    @zk2 = ZooKeeper.new("localhost:2181", :watcher => :default)
+    @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
+    @zk2 = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
     wait_until{ @zk.connected? && @zk2.connected? }
     @path_to_lock = "/lock_tester"
   end

@@ -4,7 +4,7 @@ describe ZooKeeper::ConnectionPool do
 
   before(:each) do
     @pool_size = 2
-    @connection_pool = ZooKeeper::ConnectionPool.new("localhost:2181", @pool_size, :watcher => :default)
+    @connection_pool = ZooKeeper::ConnectionPool.new("localhost:#{ZK_TEST_PORT}", @pool_size, :watcher => :default)
   end
 
   after(:each) do
