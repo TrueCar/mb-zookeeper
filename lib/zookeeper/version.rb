@@ -1,4 +1,4 @@
 module Zookeeper
   # @private
-  VERSION = '0.3.5.rc6'
+  VERSION = '0.4.0.rc0'
 end
