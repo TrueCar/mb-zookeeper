@@ -6,6 +6,7 @@
 #define THREADED
 
 #include "ruby.h"
+#include "rubyio.h"
 
 #include "c-client-src/zookeeper.h"
 #include <errno.h>
@@ -77,7 +78,7 @@ static VALUE array_from_stat(const struct Stat* stat) {
 		     LL2NUM(stat->ephemeralOwner));
 }
 
-static VALUE method_initialize(VALUE self, VALUE hostPort, VALUE eventQueue) {
+static VALUE zk_initialize(VALUE self, VALUE hostPort, VALUE eventQueue) {
   VALUE data;
   struct zk_rb_data* zk = NULL;
 
@@ -101,7 +102,7 @@ static VALUE method_initialize(VALUE self, VALUE hostPort, VALUE eventQueue) {
   struct zk_rb_data * y; \
   Data_Get_Struct(rb_iv_get(x, "@data"), struct zk_rb_data, y)
 
-static VALUE method_get_children(VALUE self, VALUE path, VALUE watch) {
+static VALUE zk_get_children(VALUE self, VALUE path, VALUE watch) {
   struct String_vector strings;
   int i;
   VALUE output;
@@ -118,7 +119,7 @@ static VALUE method_get_children(VALUE self, VALUE path, VALUE watch) {
   return output;
 }
 
-static VALUE method_exists(VALUE self, VALUE path, VALUE watch) {
+static VALUE zk_exists(VALUE self, VALUE path, VALUE watch) {
   struct Stat stat;
 
   Check_Type(path, T_STRING);
@@ -129,7 +130,7 @@ static VALUE method_exists(VALUE self, VALUE path, VALUE watch) {
   return array_from_stat(&stat);
 }
 
-static VALUE method_create(VALUE self, VALUE path, VALUE value, VALUE flags) {
+static VALUE zk_create(VALUE self, VALUE path, VALUE value, VALUE flags) {
   char realpath[10240];
 
   Check_Type(path, T_STRING);
@@ -146,7 +147,7 @@ static VALUE method_create(VALUE self, VALUE path, VALUE value, VALUE flags) {
   return rb_str_new2(realpath);
 }
 
-static VALUE method_delete(VALUE self, VALUE path, VALUE version) {
+static VALUE zk_delete(VALUE self, VALUE path, VALUE version) {
   Check_Type(path, T_STRING);
   Check_Type(version, T_FIXNUM);
 
@@ -157,7 +158,7 @@ static VALUE method_delete(VALUE self, VALUE path, VALUE version) {
   return Qtrue;
 }
 
-static VALUE method_get(VALUE self, VALUE path, VALUE watch) {
+static VALUE zk_get(VALUE self, VALUE path, VALUE watch) {
   char data[1024];
   int data_len = sizeof(data);
 
@@ -174,7 +175,7 @@ static VALUE method_get(VALUE self, VALUE path, VALUE watch) {
 		     array_from_stat(&stat));
 }
 
-static VALUE method_set(VALUE self, VALUE path, VALUE data, VALUE version)
+static VALUE zk_set(VALUE self, VALUE path, VALUE data, VALUE version)
 {
 
   FETCH_DATA_PTR(self, zk);
@@ -196,14 +197,14 @@ static void string_completion_callback(int rc, const char *value, const void *da
 }
 
 #warning [emaland] to be implemented
-static VALUE method_set2(int argc, VALUE *argv, VALUE self) {
+static VALUE zk_set2(int argc, VALUE *argv, VALUE self) {
   //  ZOOAPI int zoo_set2(zhandle_t *zh, const char *path, const char *buffer,
   //                    int buflen, int version, struct Stat *stat);
   return Qnil;
 
 }
 
-static VALUE method_set_acl(int argc, VALUE* argv, VALUE self) {
+static VALUE zk_set_acl(int argc, VALUE* argv, VALUE self) {
 /* STUB */
 /*   VALUE v_path, v_data, v_version; */
 /*   struct zk_rb_data* zk; */
@@ -247,7 +248,7 @@ LED_STATE
         SYSTEMERROR - a system error occured
 */
 #warning [emaland] make these magically synchronous for now?
-static VALUE method_add_auth(VALUE self, VALUE scheme,
+static VALUE zk_add_auth(VALUE self, VALUE scheme,
                              VALUE cert, VALUE completion,
                              VALUE completion_data) {
   struct zk_rb_data* zk;
@@ -263,7 +264,7 @@ static VALUE method_add_auth(VALUE self, VALUE scheme,
   return Qtrue;
 }
 
-static VALUE method_async(VALUE self, VALUE path,
+static VALUE zk_async(VALUE self, VALUE path,
                           VALUE completion, VALUE completion_data) {
   struct zk_rb_data* zk;
   Data_Get_Struct(rb_iv_get(self, "@data"), struct zk_rb_data, zk);
@@ -277,13 +278,13 @@ static VALUE method_async(VALUE self, VALUE path,
   return Qtrue;
 }
 
-static VALUE method_client_id(VALUE self) {
+static VALUE zk_client_id(VALUE self) {
   FETCH_DATA_PTR(self, zk);
   const clientid_t *id = zoo_client_id(zk->zh);
   return UINT2NUM(id->client_id);
 }
 
-static VALUE method_close(VALUE self) {
+static VALUE zk_close(VALUE self) {
   FETCH_DATA_PTR(self, zk);
   if (zoo_state(zk->zh) == ZOO_CONNECTED_STATE) {
     zk->eventQueue = Qfalse;
@@ -292,7 +293,7 @@ static VALUE method_close(VALUE self) {
   return INT2NUM(zoo_state(zk->zh));
 }
 
-static VALUE method_deterministic_conn_order(VALUE self, VALUE yn) {
+static VALUE zk_deterministic_conn_order(VALUE self, VALUE yn) {
   zoo_deterministic_conn_order(yn == Qtrue);
   return Qnil;
 }
@@ -352,7 +353,7 @@ static VALUE stat_to_ruby(struct Stat *stat) {
   return hash;
 }
 
-static VALUE method_get_acl(VALUE self, VALUE path) {
+static VALUE zk_get_acl(VALUE self, VALUE path) {
   FETCH_DATA_PTR(self, zk);
   Check_Type(path, T_STRING);
 
@@ -368,7 +369,7 @@ static VALUE method_get_acl(VALUE self, VALUE path) {
   return result;
 }
 
-static VALUE method_is_unrecoverable(VALUE self) {
+static VALUE zk_is_unrecoverable(VALUE self) {
   FETCH_DATA_PTR(self, zk);
   if(is_unrecoverable(zk->zh) == ZINVALIDSTATE)
     return Qtrue;
@@ -376,13 +377,13 @@ static VALUE method_is_unrecoverable(VALUE self) {
   return Qfalse;
 }
 
-static VALUE method_recv_timeout(VALUE self) {
+static VALUE zk_recv_timeout(VALUE self) {
   FETCH_DATA_PTR(self, zk);
   return INT2NUM(zoo_recv_timeout(zk->zh));
 }
 
 #warning [emaland] make this a class method or global
-static VALUE zk_cls_method_set_debug_level(VALUE cls, VALUE level) {
+static VALUE zk_cls_set_debug_level(VALUE cls, VALUE level) {
 /*  rb_raise(rb_eRuntimeError, "level was %d", level);*/
   Check_Type(level, T_FIXNUM);
   zoo_set_debug_level(FIX2INT(level));
@@ -390,25 +391,39 @@ static VALUE zk_cls_method_set_debug_level(VALUE cls, VALUE level) {
 }
 
 #warning [emaland] make this a class method or global
-static VALUE method_zerror(VALUE self, VALUE errc) {
+static VALUE zk_zerror(VALUE self, VALUE errc) {
   return rb_str_new2(zerror(FIX2INT(errc)));
 }
 
-static VALUE method_state(VALUE self) {
+static VALUE zk_state(VALUE self) {
   FETCH_DATA_PTR(self, zk);
   VALUE st = INT2NUM(zoo_state(zk->zh));
   return st;
 }
 
-#warning [emaland] make this a class method or global
-static VALUE method_set_log_stream(VALUE self, VALUE stream) {
-  // convert stream to FILE*
-  FILE *fp_stream = (FILE*)stream;
-  zoo_set_log_stream(fp_stream);
+/* XXX: for some reason, this makes the zkc code unstable */
+static VALUE zk_cls_set_log_stream(VALUE self, VALUE io) {
+  rb_io_t *fptr;
+  FILE *zk_log_stream;
+  const char *mode;
+  int fd;
+  off_t pos = 0;
+
+  Check_Type(io, T_FILE);
+  rb_funcall(io, rb_intern("flush"), 0);
+  GetOpenFile(io, fptr);                    // extract the rb_io_t struct from the io
+  rb_io_check_writable(fptr);               // ensure the stream is writable
+
+  fd = dup(fileno(GetWriteFile(fptr)));     // dup the underlying descriptor
+
+  zk_log_stream = rb_fdopen(fd, "w");       // get a FILE* to the new descriptor
+
+  zoo_set_log_stream(zk_log_stream);        // pass it in
+
   return Qnil;
 }
 
-//static VALUE method_set_watcher(VALUE self, VALUE new_watcher) {
+//static VALUE zk_set_watcher(VALUE self, VALUE new_watcher) {
 //  FETCH_DATA_PTR(self, zk);
 //#warning [emaland] needs to be tested/implemented
 //  return Qnil;
@@ -427,11 +442,12 @@ void Init_zookeeper_c() {
   cZookeeper = rb_define_class_under(mZookeeper, "CZookeeper", rb_cObject);
   mZookeeperExceptions = rb_define_module_under(mZookeeper, "Exceptions");
 
-  rb_define_singleton_method(cZookeeper, "set_debug_level", zk_cls_method_set_debug_level, 1);
+  rb_define_singleton_method(cZookeeper, "set_debug_level", zk_cls_set_debug_level, 1);
+/*  rb_define_singleton_method(cZookeeper, "set_log_stream", zk_cls_set_log_stream, 1);*/
 
 
 #define DEFINE_METHOD(method, args) { \
-    rb_define_method(cZookeeper, #method, method_ ## method, args); }
+    rb_define_method(cZookeeper, #method, zk_ ## method, args); }
 
   DEFINE_METHOD(initialize, 2);
   DEFINE_METHOD(get_children, 2);
@@ -453,7 +469,7 @@ void Init_zookeeper_c() {
   DEFINE_METHOD(recv_timeout, 1);
   DEFINE_METHOD(set2, -1);
 /*  DEFINE_METHOD(set_debug_level, 1);*/
-  DEFINE_METHOD(set_log_stream, 1);
+/*  DEFINE_METHOD(set_log_stream, 1);*/
 //  DEFINE_METHOD(set_watcher, 2);
   DEFINE_METHOD(state, 0);
   DEFINE_METHOD(zerror, 1);

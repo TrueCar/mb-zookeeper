@@ -4,10 +4,12 @@ require 'spec/mock_callbacks'
 require 'spec/zookeeper_test_server'
 require 'fileutils'
 
-unless defined?(::JRUBY_VERSION)
-  $stderr.puts "Setting ZooKeeper.set_debug_level to 0"
-  ZooKeeper::CZookeeper.set_debug_level(ZooKeeper::CZookeeper::ZOO_LOG_LEVEL_ERROR)
-end
+# unless defined?(::JRUBY_VERSION)
+#   $stderr.puts "Setting log stream to /tmp/zkclient.log"
+#   File.open('/tmp/zkclient.log', 'w') do |fp|
+#     ZooKeeper::CZookeeper.set_log_stream(fp)
+#   end
+# end
 
 RSpec.configure do |config|
   
