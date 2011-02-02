@@ -11,7 +11,8 @@
 #include <errno.h>
 #include <stdio.h>
 
-static VALUE Zookeeper = Qnil;
+static VALUE mZookeeper = Qnil;
+static VALUE cZookeeper = Qnil;
 static VALUE eNoNode = Qnil;
 static VALUE eBadVersion = Qnil;
 static VALUE eNodeExists = Qnil;
@@ -80,7 +81,7 @@ static VALUE method_initialize(VALUE self, VALUE hostPort, VALUE eventQueue) {
 
   Check_Type(hostPort, T_STRING);
 
-  data = Data_Make_Struct(Zookeeper, struct zk_rb_data, 0, free_zk_rb_data, zk);
+  data = Data_Make_Struct(cZookeeper, struct zk_rb_data, 0, free_zk_rb_data, zk);
 
   zoo_set_debug_level(ZOO_LOG_LEVEL_INFO);
   zoo_deterministic_conn_order(1);
@@ -414,10 +415,11 @@ static VALUE method_set_log_stream(VALUE self, VALUE stream) {
 //}
 
 void Init_zookeeper_c() {
-  Zookeeper = rb_define_class("CZookeeper", rb_cObject);
+  mZookeeper = rb_define_module("ZooKeeper");
+  cZookeeper = rb_define_class_under(mZookeeper, "CZookeeper", rb_cObject);
 
 #define DEFINE_METHOD(method, args) { \
-    rb_define_method(Zookeeper, #method, method_ ## method, args); }
+    rb_define_method(cZookeeper, #method, method_ ## method, args); }
 
   DEFINE_METHOD(initialize, 2);
   DEFINE_METHOD(get_children, 2);
@@ -444,11 +446,11 @@ void Init_zookeeper_c() {
   DEFINE_METHOD(state, 0);
   DEFINE_METHOD(zerror, 1);
 
-  eNoNode = rb_define_class_under(Zookeeper, "NoNodeError", rb_eRuntimeError);
-  eBadVersion = rb_define_class_under(Zookeeper, "BadVersionError", rb_eRuntimeError);
-  eNodeExists = rb_define_class_under(Zookeeper, "NodeExistsError", rb_eRuntimeError);
+  eNoNode = rb_define_class_under(cZookeeper, "NoNodeError", rb_eRuntimeError);
+  eBadVersion = rb_define_class_under(cZookeeper, "BadVersionError", rb_eRuntimeError);
+  eNodeExists = rb_define_class_under(cZookeeper, "NodeExistsError", rb_eRuntimeError);
 
-#define EXPORT_CONST(x) { rb_define_const(Zookeeper, #x, INT2FIX(x)); }
+#define EXPORT_CONST(x) { rb_define_const(cZookeeper, #x, INT2FIX(x)); }
 
   /* create flags */
   EXPORT_CONST(ZOO_EPHEMERAL);

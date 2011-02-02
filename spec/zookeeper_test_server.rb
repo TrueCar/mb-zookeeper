@@ -29,7 +29,8 @@ class ZooKeeperTestServer
   def self.set_log_level
     return if @@log_level_set
     if defined?(JRUBY_VERSION)
-      require 'zookeeper_j/log4j-1.2.15.jar'
+      require 'java'
+      require 'log4j'
       import org.apache.log4j.Logger
       import org.apache.log4j.Level
       Logger.getRootLogger().set_level(Level::OFF)
