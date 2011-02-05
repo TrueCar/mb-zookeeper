@@ -1,10 +1,13 @@
 module ZooKeeper
   # NOTE: these locks exist in a different namespace than those created w/
   # Locker, and are therefore incompatible
+  #---
+  # XXX: Should probably split this into two classes, ReadLocker and
+  # WriteLocker as the protocols are similar but slightly different
+  #
   class SharedLocker < LockerBase
     READ_LOCK_PREFIX  = 'read'.freeze
     WRITE_LOCK_PREFIX = 'write'.freeze
-
     
     class NoWriteLockFoundException < StandardError #:nodoc:
     end
