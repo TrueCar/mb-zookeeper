@@ -2,19 +2,7 @@ module ZooKeeper
   # useful class for locking.
   # implements a locking algorithm talked about by Zookeeper documentation
   # @see http://hadoop.apache.org/zookeeper/docs/r3.0.0/recipes.html#sc_recipes_Locks Zookeeper docs
-  class Locker
-
-    # @private
-    attr_accessor :zk
-
-    # @private
-    def initialize(zookeeper_client, name, root_lock_node = "/_zklocking")
-      @zk = zookeeper_client
-      @root_lock_node = root_lock_node
-      @path = name
-      @locked = false
-      @zk.create(root_lock_node, "", :mode => :persistent) rescue Exceptions::NodeExists
-    end
+  class Locker < LockerBase
 
     # a blocking lock that waits until the lock is available for continuing
     # @param [Block] the block you want to execute once your client has
@@ -24,7 +12,7 @@ module ZooKeeper
     #     #some logic
     #   end
     def with_lock(&blk)
-      create_lock_file!
+      create_lock_path!
       queue = Queue.new
 
       first_lock_blk = lambda do
@@ -57,11 +45,11 @@ module ZooKeeper
     #   locker.lock! # => true or false depending on if you got the lock or not
     #   locker.unlock!
     def lock!
-      create_lock_file!
+      create_lock_path!
       if have_first_lock?(false)
         @locked = true
       else
-        cleanup_lock_file!
+        cleanup_lock_path!
         false
       end
     end
@@ -73,7 +61,7 @@ module ZooKeeper
     #   locker.unlock!
     def unlock!
       if @locked
-        cleanup_lock_file!
+        cleanup_lock_path!
         @locked = false
         true
       end
@@ -83,33 +71,15 @@ module ZooKeeper
       @locked
     end
 
-private
-
-    def cleanup_lock_file!
-      @zk.delete(@lock_file)
-      @zk.delete(root_lock_path) rescue Exceptions::NotEmpty
-    end
-
+  protected
     def have_first_lock?(watch = true)
       lock_files = @zk.children(root_lock_path, :watch => watch)
-      lock_files.sort! {|a,b| digit_from_lock_file(a) <=> digit_from_lock_file(b)}
-      digit_from_lock_file(lock_files.first) == digit_from_lock_file(@lock_file)
+      lock_files.sort! {|a,b| digit_from_lock_path(a) <=> digit_from_lock_path(b)}
+      digit_from_lock_path(lock_files.first) == digit_from_lock_path(@lock_path)
     end
 
-    def create_lock_file!
-      @zk.create(root_lock_path, "", :mode => :persistent) rescue Exceptions::NodeExists
-      @lock_file = @zk.create("#{root_lock_path}/lock", "", :mode => :ephemeral_sequential)
-    rescue Exceptions::NoNode
-      retry
+    def digit_from_lock_path(path)
+      path[/\d+$/].to_i
     end
-
-    def root_lock_path
-      @root_lock_path ||= "#{@root_lock_node}/#{@path.gsub("/", "__")}"
-    end
-
-    def digit_from_lock_file(lock_path)
-      lock_path[/\d+$/].to_i
-    end
-
   end
 end

@@ -77,6 +77,8 @@ module ZooKeeper
       AUTHFAILED              => AuthFailed,
     }
 
+    class LockFileNameParseError < KeeperException; end
+
   end
 end
 
