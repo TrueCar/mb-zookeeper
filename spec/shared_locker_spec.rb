@@ -1,7 +1,25 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'timeout'
+require 'tracer'
+
+if ENV['RUN_TRACER']
+  $traceio = File.open('/tmp/trace.out', 'w')
+
+  Tracer.stdout = $traceio
+  Tracer.on
+end
 
 describe ZooKeeper::SharedLocker do
+  if ENV['RUN_TRACER']
+    before do
+      @orig_gc_stress, GC.stress = GC.stress, true
+    end
+
+    after do
+      GC.stress = @orig_gc_stress
+    end
+  end
+
   describe :ReadLocker do
     before do
       @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)

@@ -122,26 +122,13 @@ module ZooKeeper
       protected
         # TODO: make this generic, can either block or non-block
         def block_until_read_lock!
-          queue = Queue.new
-
-          node = next_lowest_write_lock_name
-
-          write_lock_deletion_cb = lambda do
-            abs_node_path = File.join(root_lock_path, node)
-
-            unless @zk.exists?(abs_node_path, :watch => true)
-              $stderr.puts "we acquired the lock!"
-              @locked = true
-              queue << :locked
-            end
+          begin
+            @zk.block_until_node_deleted(File.join(root_lock_path, next_lowest_write_lock_name))
+          rescue NoWriteLockFoundException
+            # next_lowest_write_lock_name may raise NoWriteLockFoundException,
+            # which means we should not block as we have the lock (there is nothing to wait for)
           end
 
-          @zk.watcher.register(node, &write_lock_deletion_cb)
-          write_lock_deletion_cb.call   # avoid a race condition between registration and availability
-
-          queue.pop   # block waiting for node deletion
-          true
-        rescue NoWriteLockFoundException
           @locked = true
         end
     end # ReadLocker
@@ -154,6 +141,7 @@ module ZooKeeper
         if got_write_lock?
           @locked = true
         elsif blocking
+          block_until_write_lock!
         else
           cleanup_lock_path!
           false
@@ -177,8 +165,28 @@ module ZooKeeper
         end
 
         def block_until_write_lock!
+          queue = Queue.new
+
+          node = next_lowest_node() # will throw WeAreTheLowestLockNumberException if we own the lock
+
+          node_deletion_cb = lambda do
+            abs_node_path = File.join(root_lock_path, node)
+
+            unless @zk.exists?(abs_node_path, :watch => true)
+              @locked = true
+              queue << :locked
+            end
+          end
+
+          @zk.watcher.register(node, &node_deletion_cb)
+          node_deletion_cb.call
+
+          queue.pop # block waiting for node deletion
+          true
+        rescue WeAreTheLowestLockNumberException
+          @locked = true
         end
-    end
+    end # WriteLocker
   end   # SharedLocker
 end     # ZooKeeper
 

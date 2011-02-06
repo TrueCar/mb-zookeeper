@@ -26,22 +26,22 @@ struct zk_rb_data {
   VALUE eventQueue;
 };
 
-static void watcher(zhandle_t *zzh, int type, int state, const char *path, void *ctx) {
-  VALUE eventQueue = ((struct zk_rb_data*)zoo_get_context(zzh))->eventQueue;
-
-  if (eventQueue != Qfalse && eventQueue != Qnil) {
-    if (rb_respond_to(eventQueue, rb_intern("push"))) {
-      VALUE hash = rb_hash_new();
-      rb_hash_aset(hash, rb_str_new2("type"), INT2FIX(type));
-      rb_hash_aset(hash, rb_str_new2("state"), INT2FIX(state));
-      rb_hash_aset(hash, rb_str_new2("path"), rb_str_new2(path));
-      rb_funcall(eventQueue, rb_intern("push"), 1, hash);
-    }
-  }
-}
+// static void watcher(zhandle_t *zzh, int type, int state, const char *path, void *ctx) {
+//   VALUE eventQueue = ((struct zk_rb_data*)zoo_get_context(zzh))->eventQueue;
+// 
+//   if (eventQueue != Qfalse && eventQueue != Qnil) {
+//     if (rb_respond_to(eventQueue, rb_intern("push"))) {
+//       VALUE hash = rb_hash_new();
+//       rb_hash_aset(hash, rb_str_new2("type"), INT2FIX(type));
+//       rb_hash_aset(hash, rb_str_new2("state"), INT2FIX(state));
+//       rb_hash_aset(hash, rb_str_new2("path"), rb_str_new2(path));
+//       rb_funcall(eventQueue, rb_intern("push"), 1, hash);
+//     }
+//   }
+// }
 
 #warning [emaland] incomplete - but easier to read!
-static void check_errors(int rc) {
+static void zk_check_errors(int rc) {
   switch (rc) {
   case ZOK:
     /* all good! */
@@ -110,7 +110,7 @@ static VALUE zk_get_children(VALUE self, VALUE path, VALUE watch) {
   Check_Type(path, T_STRING);
   FETCH_DATA_PTR(self, zk);
 
-  check_errors(zoo_get_children(zk->zh, RSTRING(path)->ptr, (watch != Qfalse && watch != Qnil), &strings));
+  zk_check_errors(zoo_get_children(zk->zh, RSTRING(path)->ptr, (watch != Qfalse && watch != Qnil), &strings));
 
   output = rb_ary_new();
   for (i = 0; i < strings.count; ++i) {
@@ -125,7 +125,7 @@ static VALUE zk_exists(VALUE self, VALUE path, VALUE watch) {
   Check_Type(path, T_STRING);
   FETCH_DATA_PTR(self, zk);
 
-  check_errors(zoo_exists(zk->zh, RSTRING(path)->ptr, (watch != Qfalse && watch != Qnil), &stat));
+  zk_check_errors(zoo_exists(zk->zh, RSTRING(path)->ptr, (watch != Qfalse && watch != Qnil), &stat));
 
   return array_from_stat(&stat);
 }
@@ -139,7 +139,7 @@ static VALUE zk_create(VALUE self, VALUE path, VALUE value, VALUE flags) {
 
   FETCH_DATA_PTR(self, zk);
 
-  check_errors(zoo_create(zk->zh, RSTRING(path)->ptr,
+  zk_check_errors(zoo_create(zk->zh, RSTRING(path)->ptr,
                           RSTRING(value)->ptr, RSTRING(value)->len,
 			  &ZOO_OPEN_ACL_UNSAFE, FIX2INT(flags),
                           realpath, sizeof(realpath)));
@@ -153,7 +153,7 @@ static VALUE zk_delete(VALUE self, VALUE path, VALUE version) {
 
   FETCH_DATA_PTR(self, zk);
 
-  check_errors(zoo_delete(zk->zh, RSTRING(path)->ptr, FIX2INT(version)));
+  zk_check_errors(zoo_delete(zk->zh, RSTRING(path)->ptr, FIX2INT(version)));
 
   return Qtrue;
 }
@@ -168,7 +168,7 @@ static VALUE zk_get(VALUE self, VALUE path, VALUE watch) {
   Check_Type(path, T_STRING);
   FETCH_DATA_PTR(self, zk);
 
-  check_errors(zoo_get(zk->zh, RSTRING(path)->ptr, (watch != Qfalse && watch != Qnil), data, &data_len, &stat));
+  zk_check_errors(zoo_get(zk->zh, RSTRING(path)->ptr, (watch != Qfalse && watch != Qnil), data, &data_len, &stat));
 
   return rb_ary_new3(2,
 		     rb_str_new(data, data_len),
@@ -180,7 +180,7 @@ static VALUE zk_set(VALUE self, VALUE path, VALUE data, VALUE version)
 
   FETCH_DATA_PTR(self, zk);
 
-  check_errors(zoo_set(zk->zh,
+  zk_check_errors(zoo_set(zk->zh,
                        RSTRING(path)->ptr,
                        RSTRING(data)->ptr, RSTRING(data)->len,
                        FIX2INT(version)));
@@ -221,7 +221,7 @@ static VALUE zk_set_acl(int argc, VALUE* argv, VALUE self) {
 
 /*   Data_Get_Struct(rb_iv_get(self, "@data"), struct zk_rb_data, zk); */
 
-/*   check_errors(zoo_set(zk->zh, RSTRING(v_path)->ptr,  */
+/*   zk_check_errors(zoo_set(zk->zh, RSTRING(v_path)->ptr,  */
 /*                        RSTRING(v_data)->ptr, RSTRING(v_data)->len,  */
 /*                        FIX2INT(v_version))); */
 
@@ -258,7 +258,7 @@ static VALUE zk_add_auth(VALUE self, VALUE scheme,
   Check_Type(cert, T_STRING);
   //  Check_Type(completion, T_OBJECT); // ???
 
-  check_errors(zoo_add_auth(zk->zh, RSTRING(scheme)->ptr,
+  zk_check_errors(zoo_add_auth(zk->zh, RSTRING(scheme)->ptr,
                             RSTRING(cert)->ptr, RSTRING(cert)->len,
                             void_completion_callback, DATA_PTR(completion_data)));
   return Qtrue;
@@ -272,7 +272,7 @@ static VALUE zk_async(VALUE self, VALUE path,
   Check_Type(path, T_STRING);
   //  Check_Type(completion, T_OBJECT); // ???
 
-  check_errors(zoo_async(zk->zh, RSTRING(path)->ptr,
+  zk_check_errors(zoo_async(zk->zh, RSTRING(path)->ptr,
                          string_completion_callback, DATA_PTR(completion_data)));
 
   return Qtrue;
@@ -288,7 +288,7 @@ static VALUE zk_close(VALUE self) {
   FETCH_DATA_PTR(self, zk);
   if (zoo_state(zk->zh) == ZOO_CONNECTED_STATE) {
     zk->eventQueue = Qfalse;
-    check_errors(zookeeper_close(zk->zh));
+    zk_check_errors(zookeeper_close(zk->zh));
   }
   return INT2NUM(zoo_state(zk->zh));
 }
@@ -361,7 +361,7 @@ static VALUE zk_get_acl(VALUE self, VALUE path) {
   //                     struct Stat *stat);
   struct ACL_vector acl;
   struct Stat stat;
-  check_errors(zoo_get_acl(zk->zh, RSTRING(path)->ptr, &acl, &stat));
+  zk_check_errors(zoo_get_acl(zk->zh, RSTRING(path)->ptr, &acl, &stat));
 
   VALUE result = rb_ary_new();
   rb_ary_push(result, acl_vector_to_ruby(&acl));
@@ -382,7 +382,6 @@ static VALUE zk_recv_timeout(VALUE self) {
   return INT2NUM(zoo_recv_timeout(zk->zh));
 }
 
-#warning [emaland] make this a class method or global
 static VALUE zk_cls_set_debug_level(VALUE cls, VALUE level) {
 /*  rb_raise(rb_eRuntimeError, "level was %d", level);*/
   Check_Type(level, T_FIXNUM);

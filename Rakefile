@@ -54,4 +54,9 @@ namespace :ext do
   end
 
   task :rebuild => [:clean, :build]
+
+  task :rebuild_debug do
+    ENV['DEBUG'] = '1'
+    Rake::Task['ext:rebuild'].invoke
+  end
 end

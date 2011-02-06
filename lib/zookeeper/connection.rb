@@ -60,6 +60,23 @@ module ZooKeeper
       nil
     rescue Exceptions::NoNode
     end
+
+    # will block the caller until +abs_node_path+ has been removed
+    def block_until_node_deleted(abs_node_path)
+      queue = Queue.new
+
+      node_deletion_cb = lambda do
+        unless exists?(abs_node_path, :watch => true)
+          queue << :locked
+        end
+      end
+
+      watcher.register(abs_node_path, &node_deletion_cb)
+      node_deletion_cb.call
+
+      queue.pop # block waiting for node deletion
+      true
+    end
   end
 end
 

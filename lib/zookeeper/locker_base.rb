@@ -34,6 +34,7 @@ module ZooKeeper
     def locked?
       false|@locked
     end
+    
 
     protected
       def create_root_path!
