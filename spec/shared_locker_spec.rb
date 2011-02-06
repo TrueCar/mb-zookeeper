@@ -20,24 +20,27 @@ describe ZooKeeper::SharedLocker do
     end
   end
 
+  before do
+    @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
+    @zk2 = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
+    @connections = [@zk, @zk2]
+
+    wait_until{ @connections.all? {|c| c.connected?} }
+
+    @path = "shlock"
+    @root_lock_path = "/_zksharedlocking/#{@path}"
+  end
+
+  after do
+    @connections.each { |c| c.close! }
+    wait_until { @connections.all? { |c| !c.connected? } }
+  end
+
+
   describe :ReadLocker do
     before do
-      @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
-      @zk2 = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
-      @connections = [@zk, @zk2]
-
-      wait_until{ @connections.all? {|c| c.connected?} }
-
-      @path = "shlock"
-      @root_lock_path = "/_zksharedlocking/#{@path}"
-
       @read_locker  = ZooKeeper::SharedLocker.read_locker(@zk, @path)
-      @read_locker2 = ZooKeeper::SharedLocker.read_locker(@zk, @path)
-    end
-
-    after do
-      @connections.each { |c| c.close! }
-      wait_until { @connections.all? { |c| !c.connected? } }
+      @read_locker2 = ZooKeeper::SharedLocker.read_locker(@zk2, @path)
     end
 
     describe :root_lock_path do
@@ -112,7 +115,72 @@ describe ZooKeeper::SharedLocker do
 
           @read_locker.should be_locked
         end
+      end
+    end
+  end   # ReadLocker
 
+  describe :WriteLocker do
+    before do
+      @write_locker = ZooKeeper::SharedLocker.write_locker(@zk, @path)
+      @write_locker2 = ZooKeeper::SharedLocker.write_locker(@zk2, @path)
+    end
+
+    describe :lock! do
+      describe 'non-blocking' do
+        before do
+          @rval = @write_locker.lock!
+          @rval2 = @write_locker2.lock!
+        end
+
+        it %[should acquire the first lock] do
+          @rval.should be_true
+        end
+
+        it %[should not acquire the second lock] do
+          @rval2.should be_false
+        end
+
+        it %[should acquire the second lock after the first lock is released] do
+          @write_locker.unlock!.should be_true
+          @write_locker2.lock!.should be_true
+        end
+
+        it %[should acquire the second lock even if a read lock is added after] do
+          pending "need to mock this out, too difficult to do live"
+
+#           @read_lock_path = @zk.create('/_zksharedlocking/shlock/read', '', :mode => :ephemeral_sequential)
+#           @write_locker.unlock!.should be_true
+#           @write_locker2.lock!.should be_true
+        end
+      end
+
+      describe 'blocking' do
+        before do
+          @zk.mkdir_p(@root_lock_path)
+          @read_lock_path = @zk.create('/_zksharedlocking/shlock/read', '', :mode => :ephemeral_sequential)
+        end
+
+        it %[should block waiting for the lock] do
+          ary = []
+
+          @write_locker.lock!.should be_false
+
+          th = Thread.new do
+            @write_locker.lock!(true)
+            ary << :locked
+          end
+
+          Thread.pass
+          ary.should be_empty
+          @write_locker.should_not be_locked
+
+          @zk.delete(@read_lock_path)
+
+          th.join(2)
+
+          ary.length.should == 1
+          @write_locker.should be_locked
+        end
       end
     end
   end

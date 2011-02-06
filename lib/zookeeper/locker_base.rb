@@ -35,6 +35,13 @@ module ZooKeeper
       false|@locked
     end
     
+    def unlock!
+      if @locked
+        cleanup_lock_path!
+        @locked = false
+        true
+      end
+    end
 
     protected
       def create_root_path!

@@ -14,7 +14,7 @@ module ZooKeeper
     end
 
     def self.write_locker(zk, path)
-      raise NotImplementedError
+      WriteLocker.new(zk, path)
     end
     
     class NoWriteLockFoundException < StandardError #:nodoc:
@@ -68,15 +68,6 @@ module ZooKeeper
           # clean up after ourselves
           cleanup_lock_path!
           false
-        end
-      end
-
-      #TODO: move this into LockerBase
-      def unlock!
-        if @locked
-          cleanup_lock_path!
-          @locked = false
-          true
         end
       end
 
@@ -165,25 +156,11 @@ module ZooKeeper
         end
 
         def block_until_write_lock!
-          queue = Queue.new
-
-          node = next_lowest_node() # will throw WeAreTheLowestLockNumberException if we own the lock
-
-          node_deletion_cb = lambda do
-            abs_node_path = File.join(root_lock_path, node)
-
-            unless @zk.exists?(abs_node_path, :watch => true)
-              @locked = true
-              queue << :locked
-            end
+          begin
+            @zk.block_until_node_deleted(File.join(root_lock_path, next_lowest_node))
+          rescue WeAreTheLowestLockNumberException
           end
 
-          @zk.watcher.register(node, &node_deletion_cb)
-          node_deletion_cb.call
-
-          queue.pop # block waiting for node deletion
-          true
-        rescue WeAreTheLowestLockNumberException
           @locked = true
         end
     end # WriteLocker
