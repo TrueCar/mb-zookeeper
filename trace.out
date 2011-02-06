@@ -1,0 +1,80 @@
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:12::-:     @orig_gc_stress, GC.stress = GC.stress, true
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:12:GC:>:     @orig_gc_stress, GC.stress = GC.stress, true
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:12:GC:<:     @orig_gc_stress, GC.stress = GC.stress, true
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:12:GC:>:     @orig_gc_stress, GC.stress = GC.stress, true
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:12:GC:<:     @orig_gc_stress, GC.stress = GC.stress, true
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:29:Kernel:<:             example_group_instance.instance_eval(&self)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:29:RSpec::Core::Hooks::BeforeHook:<:             example_group_instance.instance_eval(&self)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:60:Array:<:           each {|h| h.run_in(example_group_instance) }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:60:RSpec::Core::Hooks::BeforeHooks:<:           each {|h| h.run_in(example_group_instance) }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:106:RSpec::Core::Hooks:<:         hooks[hook][scope].run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/example_group.rb:189:RSpec::Core::ExampleGroup:-:         ancestors.reverse.each { |ancestor| ancestor.run_hook(:before, :each, example_group_instance) }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:105:RSpec::Core::Hooks:>:       def run_hook(hook, scope, example_group_instance=nil)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:106:RSpec::Core::Hooks:-:         hooks[hook][scope].run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:80:RSpec::Core::Hooks:>:       def hooks
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:85:RSpec::Core::Hooks:-:         }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:85:RSpec::Core::Hooks:<:         }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:106:Hash:>:         hooks[hook][scope].run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:106:Hash:<:         hooks[hook][scope].run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:106:Hash:>:         hooks[hook][scope].run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:106:Hash:<:         hooks[hook][scope].run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:59:RSpec::Core::Hooks::BeforeHooks:>:         def run_all(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:60:RSpec::Core::Hooks::BeforeHooks:-:           each {|h| h.run_in(example_group_instance) }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:60:Array:>:           each {|h| h.run_in(example_group_instance) }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:60:RSpec::Core::Hooks::BeforeHooks:-:           each {|h| h.run_in(example_group_instance) }
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:27:RSpec::Core::Hooks::BeforeHook:>:         def run_in(example_group_instance)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:28:RSpec::Core::Hooks::BeforeHook:-:           if example_group_instance
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:28:RSpec::Core::Hooks::BeforeHook:-:           if example_group_instance
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:29:RSpec::Core::Hooks::BeforeHook:-:             example_group_instance.instance_eval(&self)
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:17:RSpec::Core::Hooks::Hook:>:         def to_proc
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:18:RSpec::Core::Hooks::Hook:-:           @block
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:18:RSpec::Core::Hooks::Hook:<:           @block
+#0:/Users/slyphon/.rvm/gems/ruby-1.8.7-p330-ngdb/gems/rspec-core-2.1.0/lib/rspec/core/hooks.rb:29:Kernel:>:             example_group_instance.instance_eval(&self)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:21::-:       @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:21:Fixnum:>:       @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/spec/shared_locker_spec.rb:21:Fixnum:<:       @zk = ZooKeeper.new("localhost:#{ZK_TEST_PORT}", :watcher => :default)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/top_level_module_methods.rb:4:ZooKeeper::TopLevelModuleMethods:>:     def new(*args)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/top_level_module_methods.rb:5:ZooKeeper::TopLevelModuleMethods:-:       Connection.new(*args)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/top_level_module_methods.rb:5:Class:>:       Connection.new(*args)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:9:ZooKeeper::Connection:>:     def initialize(host, args = {})
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:11:ZooKeeper::Connection:-:       event_queue = false
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:12:ZooKeeper::Connection:-:       @watcher =
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:13:Hash:>:           if args[:watcher] == :default
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:13:Hash:<:           if args[:watcher] == :default
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:13:Kernel:>:           if args[:watcher] == :default
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:13:Kernel:<:           if args[:watcher] == :default
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:13:ZooKeeper::Connection:-:           if args[:watcher] == :default
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:14:ZooKeeper::Connection:-:             EventHandler.new(self)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:14:Class:>:             EventHandler.new(self)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:16:ZooKeeper::EventHandler:>:     def initialize(zookeeper_client)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:17:ZooKeeper::EventHandler:-:       @zk = zookeeper_client
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:18:ZooKeeper::EventHandler:-:       @callbacks = Hash.new { |h,k| h[k] = [] }
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:18:Class:>:       @callbacks = Hash.new { |h,k| h[k] = [] }
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:18:Hash:>:       @callbacks = Hash.new { |h,k| h[k] = [] }
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:18:Hash:<:       @callbacks = Hash.new { |h,k| h[k] = [] }
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:18:Class:<:       @callbacks = Hash.new { |h,k| h[k] = [] }
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/lib/zookeeper/event_handler.rb:18:ZooKeeper::EventHandler:<:       @callbacks = Hash.new { |h,k| h[k] = [] }
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:14:Class:<:             EventHandler.new(self)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:18:ZooKeeper::Connection:-:       if (@watcher)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:18:ZooKeeper::Connection:-:       if (@watcher)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:18:ZooKeeper::Connection:-:       if (@watcher)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:19:ZooKeeper::Connection:-:         event_queue = Queue.new
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:19:Class:>:         event_queue = Queue.new
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:19:Object:>:         event_queue = Queue.new
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:19:Object:<:         event_queue = Queue.new
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:19:Class:<:         event_queue = Queue.new
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:20:ZooKeeper::Connection:-:         setup_watcher_thread!(event_queue)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:114:ZooKeeper::Connection:>:     def setup_watcher_thread!(event_queue)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:115:ZooKeeper::Connection:-:       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:115:Thread:>:       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:115:Thread:>:       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
+#3:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:116:ZooKeeper::Connection:-:         while(true) do
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:115:Thread:<:       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
+#3:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:116:ZooKeeper::Connection:-:         while(true) do
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:115:Thread:<:       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
+#3:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:117:ZooKeeper::Connection:-:           begin
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:115:ZooKeeper::Connection:<:       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
+#3:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:118:ZooKeeper::Connection:-:             event_hash = queue.pop(true)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:22:ZooKeeper::Connection:-:       super(host, event_queue)
+#3:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:118:Queue:>:             event_hash = queue.pop(true)
+#0:/opt/case_sense/git/vendor/tobowers/zookeeper/ext/zookeeper_c/zookeeper.rb:22:ZooKeeper::CZookeeper:>:       super(host, event_queue)

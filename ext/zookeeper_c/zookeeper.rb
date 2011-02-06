@@ -111,6 +111,7 @@ module ZooKeeper
       end
     end
 
+    # XXX: there is a bug in this code that causes a [BUG] object allocation during garbage collection phase
     def setup_watcher_thread!(event_queue)
       @watcher_thread = Thread.new(self, event_queue) do |zookeeper, queue|
         while(true) do
