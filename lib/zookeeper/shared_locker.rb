@@ -31,6 +31,14 @@ module ZooKeeper
       def initialize(zookeeper_client, name, root_lock_node = '/_zksharedlocking')
         super
       end
+      
+      # block caller until lock is aquired, then yield
+      def with_lock
+        lock!(true)
+        yield
+      ensure
+        unlock!
+      end
 
       protected 
         def digit_from(path)
@@ -47,14 +55,6 @@ module ZooKeeper
     end
 
     class ReadLocker < Base
-      # block caller until lock is aquired, then yield
-      def with_lock
-        lock!(true)
-        yield
-      ensure
-        unlock!
-      end
-
       def lock!(blocking=false)
         return true if @locked
         create_lock_path!(READ_LOCK_PREFIX)

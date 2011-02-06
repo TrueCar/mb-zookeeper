@@ -26,19 +26,24 @@ struct zk_rb_data {
   VALUE eventQueue;
 };
 
-// static void watcher(zhandle_t *zzh, int type, int state, const char *path, void *ctx) {
-//   VALUE eventQueue = ((struct zk_rb_data*)zoo_get_context(zzh))->eventQueue;
-// 
-//   if (eventQueue != Qfalse && eventQueue != Qnil) {
-//     if (rb_respond_to(eventQueue, rb_intern("push"))) {
-//       VALUE hash = rb_hash_new();
-//       rb_hash_aset(hash, rb_str_new2("type"), INT2FIX(type));
-//       rb_hash_aset(hash, rb_str_new2("state"), INT2FIX(state));
-//       rb_hash_aset(hash, rb_str_new2("path"), rb_str_new2(path));
-//       rb_funcall(eventQueue, rb_intern("push"), 1, hash);
-//     }
-//   }
-// }
+static void zk_ruby_queue_based_watcher(zhandle_t *zzh, int type, int state, const char *path, void *ctx) {
+  VALUE eventQueue = ((struct zk_rb_data*)zoo_get_context(zzh))->eventQueue;
+
+  if (rb_during_gc()) {
+    fprintf(stderr, "got event during gc, type: %d state: %d, path %s\n", type, state, path);
+    fflush(stderr);
+  }
+
+  if (eventQueue != Qfalse && eventQueue != Qnil) {
+    if (rb_respond_to(eventQueue, rb_intern("push"))) {
+      VALUE hash = rb_hash_new();
+      rb_hash_aset(hash, rb_str_new2("type"), INT2FIX(type));
+      rb_hash_aset(hash, rb_str_new2("state"), INT2FIX(state));
+      rb_hash_aset(hash, rb_str_new2("path"), rb_str_new2(path));
+      rb_funcall(eventQueue, rb_intern("push"), 1, hash);
+    }
+  }
+}
 
 #warning [emaland] incomplete - but easier to read!
 static void zk_check_errors(int rc) {
@@ -89,7 +94,7 @@ static VALUE zk_initialize(VALUE self, VALUE hostPort, VALUE eventQueue) {
   zoo_set_debug_level(ZOO_LOG_LEVEL_INFO);
   zoo_deterministic_conn_order(1);
   zk->eventQueue = eventQueue;
-  zk->zh = zookeeper_init(RSTRING(hostPort)->ptr, watcher, 10000, &zk->myid, (struct zk_rb_data*)zk, 0);
+  zk->zh = zookeeper_init(RSTRING(hostPort)->ptr, zk_ruby_queue_based_watcher, 10000, &zk->myid, (struct zk_rb_data*)zk, 0);
   if (!zk->zh) {
     rb_raise(rb_eRuntimeError, "error connecting to zookeeper: %d", errno);
   }
