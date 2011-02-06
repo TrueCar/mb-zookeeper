@@ -27,6 +27,14 @@ module ZooKeeper
       lock_path and File.basename(lock_path)
     end
 
+    def root_lock_path #:nodoc:
+      @root_lock_path ||= "#{@root_lock_node}/#{@path.gsub("/", "__")}"
+    end
+
+    def locked?
+      false|@locked
+    end
+
     protected
       def create_root_path!
         @zk.mkdir_p(root_lock_path)
@@ -46,9 +54,6 @@ module ZooKeeper
         @zk.delete(root_lock_path) rescue Exceptions::NotEmpty
       end
 
-      def root_lock_path
-        @root_lock_path ||= "#{@root_lock_node}/#{@path.gsub("/", "__")}"
-      end
   end
 end
 
