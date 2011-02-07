@@ -11,6 +11,7 @@
 #include "c-client-src/zookeeper.h"
 #include <errno.h>
 #include <stdio.h>
+#include <pthread.h>
 
 static VALUE mZookeeper           = Qnil;
 static VALUE cZookeeper           = Qnil;
@@ -19,6 +20,152 @@ static VALUE eBadVersion          = Qnil;
 static VALUE eNodeExists          = Qnil;
 static VALUE mZookeeperExceptions = Qnil;
 static VALUE eKeeperException     = Qnil;
+
+/**
+ * simple event queue for holding onto watcher events until they can be delivered
+ */
+
+
+// this implementation based on http://lispmachine.wordpress.com/2009/05/13/queue-in-c/
+
+
+typedef struct zk_list_node zk_list_node;
+typedef struct zk_event_data zk_event_data;
+
+struct zk_event_data {
+  int type;
+  int state;
+  const char *path;
+};
+
+struct zk_list_node {
+  zk_event_data *event;
+  zk_list_node *next;
+};
+
+typedef struct {
+  zk_list_node*       head;
+  zk_list_node*       tail;
+  pthread_mutex_t     mutex;
+} zk_event_list;
+
+
+zk_event_list* list_add_element( zk_event_list*, const zk_event_data*);
+zk_event_list* list_remove_element( zk_event_list*);
+
+zk_event_list* list_new(void);
+zk_event_list* list_free( zk_event_list* );
+
+void list_print( const zk_event_list* );
+void list_print_element(const zk_list_node* );
+
+/* Will always return the pointer to zk_event_list */
+zk_event_list* list_add_element(zk_event_list* s, const zk_event_data* event) {
+  zk_list_node* p = malloc( 1 * sizeof(*p) );
+
+  if( NULL == p ) {
+    fprintf(stderr, "IN %s, %s: malloc() failed\n", __FILE__, "list_add");
+    return s;
+  }
+
+  p->event = event;
+  p->next = NULL;
+
+  if( NULL == s ) {
+    printf("Queue not initialized\n");
+    return s;
+  }
+  else if( NULL == s->head && NULL == s->tail ) {
+    /* printf("Empty list, adding p->num: %d\n\n", p->num);  */
+    s->head = s->tail = p;
+    return s;
+  }
+  else if( NULL == s->head || NULL == s->tail ) {
+    fprintf(stderr, "There is something seriously wrong with your assignment of head/tail to the list\n");
+    free(p);
+    return NULL;
+  }
+  else {
+    /* printf("List not empty, adding element to tail\n"); */
+    s->tail->next = p;
+    s->tail = p;
+  }
+
+  return s;
+}
+
+/* This is a queue and it is FIFO, so we will always remove the first element */
+zk_event_list* list_remove_element( zk_event_list* s ) {
+  zk_list_node* h = NULL;
+  zk_list_node* p = NULL;
+
+  if( NULL == s ) {
+    printf("List is empty\n");
+    return s;
+  }
+  else if( NULL == s->head && NULL == s->tail ) {
+    printf("Well, List is empty\n");
+    return s;
+  }
+  else if( NULL == s->head || NULL == s->tail ) {
+    printf("There is something seriously wrong with your list\n");
+    printf("One of the head/tail is empty while other is not \n");
+    return s;
+  }
+
+  h = s->head;
+  p = h->next;
+  free(h);
+  s->head = p;
+  if( NULL == s->head )  s->tail = s->head;   /* The element tail was pointing to is free(), so we need an update */
+
+  return s;
+}
+
+/* ---------------------- small helper fucntions ---------------------------------- */
+zk_event_list* list_free( zk_event_list* s ) {
+  while( s->head ) {
+    list_remove_element(s);
+  }
+
+  // need to make sure the zk thread is shut down before destroying this mutex
+  pthread_mutex_destroy(&s->mutex);
+
+  return s;
+}
+
+zk_event_list* list_new(void) {
+  zk_event_list* p = malloc( 1 * sizeof(*p) );
+
+  if ( NULL == p ) {
+    fprintf(stderr, "LINE: %d, malloc() failed\n", __LINE__);
+  }
+
+  if ( NULL == mutex ) {
+    fprintf(stderr, "LINE: %d, mutex malloc() failed\n", __LINE__);
+  }
+
+  p->head = p->tail = NULL;
+
+  p->mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  return p;
+}
+
+zk_list_node* list_pop(zk_event_list* s) {
+  zk_list_node* rval;
+
+}
+
+
+// == client wrapper code ==============================================================
+
+struct zk_rb_data2 {
+  zhandle_t *zh;
+  clientid_t myid;
+  VALUE io_pipe;
+
+}
 
 struct zk_rb_data {
   zhandle_t *zh;
